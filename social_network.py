@@ -89,6 +89,31 @@ class Grafo:
         plt.title("Grafo Interativo com Recomendações")
         plt.show()
 
+    def gerar_grafo_recomendacoes(self):
+        g = nx.Graph()
+
+        for usuario in self.interesses.keys():
+            recomendacoes = self.recomendar_usuarios(usuario)
+            for outro_usuario, score, _, _ in recomendacoes:
+                if g.has_edge(usuario, outro_usuario):
+                    continue
+                g.add_edge(usuario, outro_usuario, weight=score)
+
+        pos = nx.spring_layout(g)
+        plt.figure(figsize=(10, 8))
+
+        nx.draw(
+            g, pos, with_labels=True,
+            node_color="lightgreen", node_size=2000,
+            font_size=10, font_weight="bold",
+            )
+        labels = nx.get_edge_attributes(g, 'weight')
+        nx.draw_networkx_edge_labels(g, pos, edge_labels=labels, font_size=8)
+
+        plt.title("Grafo de Recomendações com Pesos")
+        plt.show()
+
+
 grafo = Grafo()
 
 grafo.adicionar_aresta("Ana", "Bia")
@@ -122,3 +147,4 @@ grafo.adicionar_interesses("Diego", ["esportes", "fotografia", "filmes", "viagem
 grafo.adicionar_interesses("Sophia", ["história", "livros", "fotografia"])
 
 grafo.gerar_grafo_visual()
+grafo.gerar_grafo_recomendacoes()
